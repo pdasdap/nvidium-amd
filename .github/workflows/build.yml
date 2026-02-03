@@ -1,31 +1,25 @@
-name: Build
-
-on:
-  push:
-  pull_request:
+name: build
+on: [pull_request, push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout repository
+      - name: checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up JDK 17
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+      - name: setup jdk
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Make Gradle wrapper executable
+          java-version: '21'
+          distribution: 'microsoft'
+      - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
-      - name: Build with Gradle
+      - name: build
         run: ./gradlew build
-
-      - name: Upload build artifacts
+      - name: capture build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: nvidium-amd-build
-          path: build/libs/*.jar
+          name: Artifacts
+          path: build/libs/
